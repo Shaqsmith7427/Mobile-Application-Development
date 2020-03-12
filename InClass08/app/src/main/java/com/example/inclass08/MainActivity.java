@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -40,47 +41,47 @@ public class MainActivity extends AppCompatActivity {
 
         login = findViewById(R.id.bt_login);
 
+        ArrayList<Emails> emails = new ArrayList<>();
 
-
-        login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-             String emailString = email.getText().toString();
-             String passString = password.getText().toString();
+//        login.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//             String emailString = email.getText().toString();
+//             String passString = password.getText().toString();
 
                 final OkHttpClient client = new OkHttpClient();
-                RequestBody formBody = new FormBody.Builder()
-                        .add("email", emailString)
-                        .add("password", passString)
-                        .build();
-
-                Request request = new Request.Builder()
-                        .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/login")
-                        .post(formBody)
-                        .build();
-
-                client.newCall(request).enqueue(new Callback() {
-                    @Override public void onFailure(Call call, IOException e) {
-
-                    }
-
-                    @Override public void onResponse(Call call, Response response) throws IOException {
-                        try (ResponseBody responseBody = response.body()) {
-                            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-
-                            Headers responseHeaders = response.headers();
-                            for (int i = 0, size = responseHeaders.size(); i < size; i++) {
-                                System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
-                                Log.d("demo", "onResponse: " + responseHeaders.name(i) + ": " + responseHeaders.value(i));
-                            }
-
-                            Log.d("demo", "onResponse: " + responseBody.string());
-                        }
-                    }
-                });
-
-            }
-        });
+//                RequestBody formBody = new FormBody.Builder()
+//                        .add("email", emailString)
+//                        .add("password", passString)
+//                        .build();
+//
+//                Request request = new Request.Builder()
+//                        .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/login")
+//                        .post(formBody)
+//                        .build();
+//
+//                client.newCall(request).enqueue(new Callback() {
+//                    @Override public void onFailure(Call call, IOException e) {
+//
+//                    }
+//
+//                    @Override public void onResponse(Call call, Response response) throws IOException {
+//                        try (ResponseBody responseBody = response.body()) {
+//                            if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+//
+//                            Headers responseHeaders = response.headers();
+//                            for (int i = 0, size = responseHeaders.size(); i < size; i++) {
+//                                System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
+//                                Log.d("demo", "onResponse: " + responseHeaders.name(i) + ": " + responseHeaders.value(i));
+//                            }
+//
+//                            Log.d("demo", "onResponse: " + responseBody.string());
+//                        }
+//                    }
+//                });
+//
+//            }
+//        });
 
 
 
@@ -108,10 +109,42 @@ public class MainActivity extends AppCompatActivity {
 //                    }
 //
 //                    Log.d("demo", "onResponse: " + responseBody.string());
-//                    System.out.println(responseBody.string());
+//                 //   System.out.println(responseBody.string());
 //                }
 //            }
 //        });
+
+
+
+        Request request = new Request.Builder()
+                .url("http://ec2-18-234-222-229.compute-1.amazonaws.com/api/inbox")
+                .header("Authorization", "BEARER " + getResources().getString(R.string.apikey))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+
+            @Override public void onResponse(Call call, Response response) throws IOException {
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+
+                    Headers responseHeaders = response.headers();
+                    for (int i = 0, size = responseHeaders.size(); i < size; i++) {
+
+                        System.out.println(responseHeaders.name(i) + ": " + responseHeaders.value(i));
+
+                        Log.d("demo", "onResponse: " + responseHeaders.name(i) + ": " + responseHeaders.value(i));
+                    }
+
+                    Log.d("demo", "onResponse: " + responseBody.string());
+                    //   System.out.println(responseBody.string());
+
+                }
+            }
+        });
 
     }
 }
