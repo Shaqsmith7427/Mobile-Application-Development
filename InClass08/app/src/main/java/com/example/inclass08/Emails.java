@@ -3,17 +3,6 @@ package com.example.inclass08;
 public class Emails {
     String fname, lname, id, sender, reciever, message, subject, createdAt, updatedAt;
 
-    public Emails(String fname, String lname, String id, String sender, String reciever, String message, String subject, String createdAt, String updatedAt) {
-        this.fname = fname;
-        this.lname = lname;
-        this.id = id;
-        this.sender = sender;
-        this.reciever = reciever;
-        this.message = message;
-        this.subject = subject;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 
     public String getFname() {
         return fname;
