@@ -6,6 +6,15 @@ public class City {
     String county;
     String temperature;
     String favourite;
+    String state;
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
 
     public String getCitykey() {
         return citykey;
@@ -47,11 +56,4 @@ public class City {
         this.favourite = favourite;
     }
 
-    public City(String citykey, String cityname, String county, String temperature, String favourite) {
-        this.citykey = citykey;
-        this.cityname = cityname;
-        this.county = county;
-        this.temperature = temperature;
-        this.favourite = favourite;
-    }
 }

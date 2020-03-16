@@ -4,6 +4,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -14,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ import com.squareup.picasso.Picasso;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     LayoutInflater layoutInflater;
     String city;
     String country;
+    ArrayList<String> CityState = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,14 +99,11 @@ public class MainActivity extends AppCompatActivity {
                         city = et_city_curr.getText().toString();
                         country = et_country_curr.getText().toString();
 
-                        Log.d(TAG, "City: " + city);
-                        Log.d(TAG, "Country: " + country);
-
                         ArrayList<String> location = new ArrayList<>();
                         location.add(city);
                         location.add(country);
 
-                        Log.d(TAG, "Send me Your location" + location);
+                       // Log.d(TAG, "Send me Your location" + location);
                         code = new GetLocation().execute(location).toString();
 
                         alertDialog.cancel();
@@ -141,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<String> location = new ArrayList<>();
                 location.add(city);
                 location.add(country);
-                new GetLocation().execute(location).toString();
+
+                new GetCities().execute(location).toString();
             }
         });
 
@@ -313,11 +314,107 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "imageurl: " + imageURL);
             Picasso.get().load(imageURL).into(image);
 
+        }
+    }
 
+
+
+
+    class GetCities extends AsyncTask<ArrayList<String>, Void, ArrayList<City>> {
+
+        @Override
+        protected ArrayList<City> doInBackground(ArrayList<String>... arrayLists) {
+            HttpURLConnection connection = null;
+            String cit = arrayLists[0].get(0);
+            String coun = arrayLists[0].get(1);
+
+            ArrayList<City> cityList = new ArrayList<>();
+
+            try {
+                String url = baseUrl + "/locations/v1/cities/" + coun + "/search?apikey=" + getResources().getString(R.string.api_key) + "&q=" + cit;
+                Log.d(TAG, "URL1 " + url);
+                URL urlB = new URL(url);
+
+
+                connection = (HttpURLConnection) urlB.openConnection();
+                connection.connect();
+
+                if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    String json = IOUtils.toString(connection.getInputStream(), "UTF8");
+
+                    JSONArray root = new JSONArray(json);
+
+                    for (int i = 0; i < root.length(); i++) {
+                        JSONObject cityJson = root.getJSONObject(i);
+
+                        if (!cityJson.equals(null)) {
+
+                            City city1 = new City();
+                            city1.citykey = cityJson.getString("Key");
+                            city1.cityname = cityJson.getString("LocalizedName");
+                            city1.state = cityJson.getJSONObject("AdministrativeArea").getString("ID");
+                            //Log.d(TAG, "City Key: " + city1.citykey);
+                            cityList.add(city1);
+
+                        } else {
+                            //       Toast.makeText(this, "Check Internet Connection", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return cityList;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<City> cities) {
+            super.onPostExecute(cities);
+            ArrayList<String> CityState = new ArrayList<>();
+             final String str[] = new String[cities.size()];
+             final String key[] = new String[cities.size()];
+             int i = 0;
+
+            for (City cityList : cities) {
+
+                Log.d(TAG, "City: " + cityList.getCityname());
+                Log.d(TAG, "State: " + cityList.getState());
+               // CityState.add(0,cityList.getCityname() + ", " + cityList.getState() + "/" + cityList.getCitykey());
+               // Log.d(TAG, "onPostExecute: " + CityState);
+                str[i] =  cityList.getCityname() + ", " + cityList.getState();
+                key[i] =  cityList.getCitykey();
+
+                i++;
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+            builder.setTitle("Select City").setItems(str, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Log.d(TAG, "onClick: "+ str[which]);
+                    String keyword = str[which];
+                    String ke = key[which];
+
+                    Log.d(TAG, "onClick: " + keyword);
+                    Log.d(TAG, "onClick: " + ke);
+
+                   // Intent intent = new Intent(MainActivity.this,CityWeather.class);
+                    //intent.putExtra("key", ke);
+                    //intent.putExtra("base", baseUrl);
+
+                }
+            });
+            builder.create().show();
 
 
         }
     }
+
 
 
 }
