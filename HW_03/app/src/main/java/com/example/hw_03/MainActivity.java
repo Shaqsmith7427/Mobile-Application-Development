@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     String city;
     String country;
     ArrayList<String> CityState = new ArrayList<>();
+    String keyword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -297,7 +298,7 @@ public class MainActivity extends AppCompatActivity {
             image = findViewById(R.id.icon);
 
             String wIcon = condtions.get(0).getIcon();
-           String imageURL =  "http://developer.accuweather.com/sites/default/files/"+ condtions.get(0).getIcon() + "-s.png";
+            String imageURL =  "http://developer.accuweather.com/sites/default/files/"+ condtions.get(0).getIcon() + "-s.png";
 
             try {
                 URL urlImage = new URL(imageURL);
@@ -397,16 +398,18 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     Log.d(TAG, "onClick: "+ str[which]);
-                    String keyword = str[which];
+                     keyword = str[which];
                     String ke = key[which];
 
                     Log.d(TAG, "onClick: " + keyword);
                     Log.d(TAG, "onClick: " + ke);
 
-                   // Intent intent = new Intent(MainActivity.this,CityWeather.class);
-                    //intent.putExtra("key", ke);
-                    //intent.putExtra("base", baseUrl);
-
+                    Intent intent = new Intent(MainActivity.this,CityWeather.class);
+                    intent.putExtra("city", keyword);
+                    intent.putExtra("key", key[which]);
+                    intent.putExtra("base", baseUrl);
+                    Log.d(TAG, "Click ");
+                    startActivity(intent);
                 }
             });
             builder.create().show();
