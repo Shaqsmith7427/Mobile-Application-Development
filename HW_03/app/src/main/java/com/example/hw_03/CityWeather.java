@@ -1,17 +1,18 @@
 package com.example.hw_03;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -28,18 +29,20 @@ import java.util.ArrayList;
 public class CityWeather extends AppCompatActivity {
     private static final String TAG = "demo";
 
-    TextView location, text, forecast, temp;
+    TextView location, text, forecast, temp, clickLink;
     ImageView day, night;
     TextView dayStatus, nightStatus;
 
-    TextView clickLink;
-
-    String high, low, dayIcon, nightIcon, link;
     String key;
     String baseUrl;
     String cit;
 
     String locate, heading;
+    RecyclerView recyclerView;
+    RecyclerView.Adapter rv_adapter;
+    RecyclerView.LayoutManager rv_layout;
+    Daily dayList;
+    Button save, setCurrent;
 
 
     @Override
@@ -61,6 +64,9 @@ public class CityWeather extends AppCompatActivity {
         temp = findViewById(R.id.tv_temp);
         dayStatus = findViewById(R.id.dayStatus);
         nightStatus = findViewById(R.id.nightStatus);
+        clickLink = findViewById(R.id.click);
+        save = findViewById(R.id.bt_saveCity);
+        setCurrent = findViewById(R.id.bt_setCurrent);
 
         day = findViewById(R.id.iv_day);
         night = findViewById(R.id.iv_night);
@@ -131,17 +137,35 @@ public class CityWeather extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Daily> dailies) {
+        protected void onPostExecute(final ArrayList<Daily> dailies) {
             super.onPostExecute(dailies);
-            ArrayList<Daily> da = dailies;
+
             location.setText(cit);
             text.setText(heading);
-            int i = 1;
-            Log.d(TAG, "Day 1: " + dailies.get(0));
+            forecast.setText("Forecast for " + dailies.get(0).getDate());
+            temp.setText("Temperature: " + dailies.get(0).getHighTemp()+"/"+dailies.get(0).getLowTemp()+" F");
+            Log.d(TAG, "DayIcon" + dailies.get(0).getDayIcon());
+            String imDay = dailies.get(0).getDayIcon();
+            String imNite = dailies.get(0).getNightIcon();
 
-            for (Daily dayList : dailies) {
-                dailies.get(0);
-                Log.d(TAG, "Day: " + i);
+            String imageDay =  "http://developer.accuweather.com/sites/default/files/"+imDay+ "-s.png";
+            String imageNight = "http://developer.accuweather.com/sites/default/files/"+imNite+ "-s.png";
+            Picasso.get().load(imageDay).into(day);
+            Picasso.get().load(imageNight).into(night);
+            dayStatus.setText(dailies.get(0).getDayStatus());
+            nightStatus.setText(dailies.get(0).getNightStatus());
+            clickLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent linkIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(dailies.get(0).getLink()));
+
+                    startActivity(linkIntent);
+                }
+            });
+            for (int i=1; i<dailies.size(); i++)
+            {
+              Daily dayList = dailies.get(i);
                 Log.d(TAG, "Date: " + dayList.date);
                 Log.d(TAG, "Temp: " + dayList.highTemp + "/" + dayList.lowTemp + " F");
                 Log.d(TAG, "DayIcon: " + dayList.dayIcon);
@@ -149,8 +173,33 @@ public class CityWeather extends AppCompatActivity {
                 Log.d(TAG, "DayStatus: " + dayList.dayStatus);
                 Log.d(TAG, "nightStatus " + dayList.nightStatus);
                 Log.d(TAG, "Link: " + dayList.link);
-                i++;
             }
+
+            setCurrent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent currentIntent = new Intent(CityWeather.this,MainActivity.class);
+                    String[] cityName = key.split(",");
+                    currentIntent.putExtra("City", cityName[0]);
+                    startActivity(currentIntent);
+                }
+
+            });
+
+
+
+            recyclerView = findViewById(R.id.rv_5day);
+
+            // recyclerView.setHasFixedSize(true);
+
+            rv_layout = new LinearLayoutManager(CityWeather.this);
+            recyclerView.setLayoutManager(rv_layout);
+
+            rv_adapter = new RecyclerAdapter(dayList, CityWeather.this);
+            recyclerView.setAdapter(rv_adapter);
+
+
+
 
 
         }

@@ -1,6 +1,8 @@
 package com.example.hw_03;
 
-public class Daily {
+import java.util.ArrayList;
+
+public class Daily extends ArrayList<Daily> {
     String dayIcon, nightIcon;
     String highTemp, lowTemp;
     String date;

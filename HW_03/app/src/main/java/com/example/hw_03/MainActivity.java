@@ -53,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
     String country;
     ArrayList<String> CityState = new ArrayList<>();
     String keyword;
+    ArrayList<String> location = new ArrayList<>();
+
+    String cityCurrent = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,14 @@ public class MainActivity extends AppCompatActivity {
         curr_city = findViewById(R.id.bt_currCity);
         search_city = findViewById(R.id.bt_search);
         text = findViewById(R.id.textView);
+
+        if (!(cityCurrent.isEmpty()))
+        {   Intent intent = getIntent();
+            cityCurrent = intent.getStringExtra("City");
+            location.add(cityCurrent);
+            location.add("US");
+            new GetLocation().execute(location).toString();
+        }
 
         curr_city.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
                        // Log.d(TAG, "Send me Your location" + location);
                         code = new GetLocation().execute(location).toString();
-
+                        code = new GetLocation().execute(location).toString();
                         alertDialog.cancel();
 
                         text.setVisibility(View.GONE);
@@ -139,15 +151,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "City: " + city);
                 Log.d(TAG, "Country: " + country);
 
-                ArrayList<String> location = new ArrayList<>();
+
+
                 location.add(city);
                 location.add(country);
 
                 new GetCities().execute(location).toString();
             }
         });
-
-
 
     }
 
@@ -292,12 +303,11 @@ public class MainActivity extends AppCompatActivity {
             TextView updated;
 
             location = findViewById(R.id.location);
-            condition = findViewById(R.id.condition);
+            condition = findViewById(R.id.tv_dayday);
             temp = findViewById(R.id.temperature);
             updated = findViewById(R.id.updated);
             image = findViewById(R.id.icon);
 
-            String wIcon = condtions.get(0).getIcon();
             String imageURL =  "http://developer.accuweather.com/sites/default/files/"+ condtions.get(0).getIcon() + "-s.png";
 
             try {

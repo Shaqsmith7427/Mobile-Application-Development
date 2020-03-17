@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">HW_03</string>
-    <string name="api_key">tvjpBmfMpmAD8jYUL6rPcr71agTbKKa8</string>
+<!--    <string name="api_key">tvjpBmfMpmAD8jYUL6rPcr71agTbKKa8</string>-->
+<!--    <string name="api_key">5Z7VoR6vdpUUXf5G9P13vHJ7eYCYNElY</string>-->
+    cRiC11ciUcQs1AfLVfNmMRz0pLHDU1VF
+    <string name="api_key">cRiC11ciUcQs1AfLVfNmMRz0pLHDU1VF</string>
 </resources>
